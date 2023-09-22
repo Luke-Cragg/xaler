@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1027057940353",
+    "project_id": "xaler-fd6a2",
+    "storage_bucket": "xaler-fd6a2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027057940353:android:8564aadfabfe053b651a80",
+        "android_client_info": {
+          "package_name": "com.example.xaler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNo7ZQkOqCh8VHedLZDO2tSufmSrjl2N4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
