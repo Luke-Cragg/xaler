@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:xaler/Onboarding.dart';
 import 'Navigation.dart';
 import 'Onboarding.dart';
+import 'package:intro_slider/intro_slider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,10 +31,12 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static const String _title = 'XALER';
+  static const type = 1;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: _title,
       home: Scaffold(
         extendBodyBehindAppBar: true,
