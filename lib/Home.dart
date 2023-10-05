@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'main.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,7 +15,15 @@ class HomePage extends State<Home> {
       appBar: AppBar(
         title: Text("Home"),
       ),
-      body: Text("Home"),
+      body: ElevatedButton(
+        onPressed: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.remove('email');
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MainStatefulWidget()));
+        },
+        child: Text("Sign out"),
+      ),
     );
   }
 }
