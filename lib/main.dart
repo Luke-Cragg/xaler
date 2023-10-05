@@ -2,15 +2,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:xaler/Home.dart';
 import 'package:xaler/Onboarding.dart';
 import 'Navigation.dart';
-import 'Onboarding.dart';
-import 'package:intro_slider/intro_slider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   runApp(MyApp());
 }
 
@@ -69,6 +68,22 @@ class _MainStatefulWidget extends State<MainStatefulWidget> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  Future<void> checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('email');
+    String? password = prefs.getString('password');
+
+    if (email != null && password != null) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const MyNav()));
+    }
+  }
+
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
   Future LogIn() async {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: nameController.text.trim(),
@@ -88,68 +103,69 @@ class _MainStatefulWidget extends State<MainStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Purple,
-          // gradient: LinearGradient(
-          //     begin: Alignment.topCenter,
-          //     end: Alignment.bottomCenter,
-          //     colors: [BackGrey, DarkBlue]),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
-          children: <Widget>[
-            Container(
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                'Log in',
-                style: GoogleFonts.quicksand(fontSize: 30, color: Colors.white),
+    return Scaffold(
+      body: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Purple,
+          ),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
+            children: <Widget>[
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  'Log in',
+                  style:
+                      GoogleFonts.quicksand(fontSize: 30, color: Colors.white),
+                ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: TextField(
-                  controller: nameController,
-                  style: TextStyle(color: Colors.black),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'UserName',
-                  )),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child: TextField(
-                  obscureText: true,
-                  controller: passwordController,
-                  decoration: const InputDecoration(
-                    hintStyle: TextStyle(color: Colors.white),
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Password',
-                  )),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: const Text('Forgot Password'),
-            ),
-            SignInButton(context, true, () {
-              FirebaseAuth.instance
-                  .signInWithEmailAndPassword(
-                      email: nameController.text,
-                      password: passwordController.text)
-                  .then((value) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Onboarding()));
-              });
-            })
-          ],
-        ));
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: TextField(
+                    controller: nameController,
+                    style: TextStyle(color: Colors.black),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'UserName',
+                    )),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                child: TextField(
+                    obscureText: true,
+                    controller: passwordController,
+                    decoration: const InputDecoration(
+                      hintStyle: TextStyle(color: Colors.white),
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Password',
+                    )),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text('Forgot Password'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String email = nameController.text;
+                  String password = passwordController.text;
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setString('email', email);
+                  prefs.setString('password', password);
+
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MyNav()));
+                },
+                child: Text("Sign in"),
+              ),
+            ],
+          )),
+    );
   }
 }
