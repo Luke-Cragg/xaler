@@ -99,15 +99,14 @@ class _MainStatefulWidget extends State<MainStatefulWidget> {
 
   final Color BackGrey = const Color(0xFF222222);
   final Color DarkBlue = const Color(0xFF02275D);
-  final Color Purple = const Color(0xFFAC008F);
-
+  final Color Bground = const Color(0xFF003A6C);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Purple,
+            color: Bground,
           ),
           child: ListView(
             padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
@@ -159,7 +158,7 @@ class _MainStatefulWidget extends State<MainStatefulWidget> {
                   prefs.setString('email', email);
                   prefs.setString('password', password);
 
-                  Navigator.push(context,
+                  Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => MyNav()));
                 },
                 child: Text("Sign in"),
