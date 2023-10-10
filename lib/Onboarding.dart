@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Home.dart';
 import 'package:intro_slider/intro_slider.dart';
+import 'models/Questions.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class Onboarding extends StatefulWidget {
 class onboardingPage extends State<Onboarding> {
   final List<ContentConfig> ContentList = [];
   final Color Purple = const Color(0xFFAC008F);
+  final Question = questions[0];
 
   @override
   void initState() {
@@ -28,7 +30,7 @@ class onboardingPage extends State<Onboarding> {
     );
     ContentList.add(
       const ContentConfig(
-        title: "Question 1: ",
+        
         description: "How are you feeling today",
         backgroundColor: Color(0xFFFF5F1F),
       ),
@@ -65,7 +67,6 @@ class onboardingPage extends State<Onboarding> {
     );
   }
 }
-
 
 // class Onboarding extends StatefulWidget {
 //   const Onboarding({super.key});
@@ -202,3 +203,4 @@ class onboardingPage extends State<Onboarding> {
 //         ));
 //   }
 // }
+//}
