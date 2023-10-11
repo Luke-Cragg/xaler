@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 Container SignInButton(BuildContext context, bool isLogin, Function onTap) {
@@ -79,6 +79,7 @@ class _MainStatefulWidget extends State<MainStatefulWidget> {
     }
   }
 
+  @override
   void initState() {
     super.initState();
     checkLoginStatus();
@@ -97,16 +98,14 @@ class _MainStatefulWidget extends State<MainStatefulWidget> {
     super.dispose();
   }
 
-  final Color BackGrey = const Color(0xFF222222);
-  final Color DarkBlue = const Color(0xFF02275D);
-  final Color Bground = const Color(0xFF003A6C);
+  final Color backGround = const Color(0xFF003A6C);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Bground,
+            color: backGround,
           ),
           child: ListView(
             padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
@@ -124,7 +123,7 @@ class _MainStatefulWidget extends State<MainStatefulWidget> {
                 padding: const EdgeInsets.all(10),
                 child: TextField(
                     controller: nameController,
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       filled: true,
