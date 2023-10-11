@@ -32,6 +32,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   intro_slider:
   shared_preferences:
+  smooth_page_indicator:
 
 dev_dependencies:
   flutter_test:
