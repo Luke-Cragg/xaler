@@ -10,7 +10,7 @@ class Settings extends StatefulWidget {
 }
 
 class SettingsPage extends State<Settings> {
-  final Color Purple = const Color(0xFFAC008F);
+  final Color backGround = const Color(0xFF003A6C);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +19,7 @@ class SettingsPage extends State<Settings> {
           "Settings",
           style: GoogleFonts.quicksand(color: Colors.white, fontSize: 30),
         ),
-        backgroundColor: Purple,
+        backgroundColor: backGround,
         leading: IconButton(
           icon: const Icon(
             Icons.chevron_left_outlined,
@@ -38,8 +38,8 @@ class SettingsPage extends State<Settings> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      width: 370,
+                    SizedBox(
+                      width: 375,
                       child: ElevatedButton(
                         onPressed: () async {
                           SharedPreferences prefs =
@@ -52,7 +52,7 @@ class SettingsPage extends State<Settings> {
                         },
                         child: Text("Sign out"),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],
