@@ -12,8 +12,7 @@ class Home extends StatefulWidget {
 }
 
 class HomePage extends State<Home> {
-  @override
-  final Color BackColor = const Color(0xFF38434E);
+  final Color backColor = const Color(0xFF38434E);
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +21,7 @@ class HomePage extends State<Home> {
             "XALER",
             style: GoogleFonts.quicksand(fontSize: 42, color: Colors.white),
           ),
-          backgroundColor: BackColor,
+          backgroundColor: backColor,
           elevation: 0,
           centerTitle: true,
           automaticallyImplyLeading: false,
@@ -45,7 +44,7 @@ class HomePage extends State<Home> {
         ),
         body: Container(
           width: double.infinity,
-          decoration: BoxDecoration(color: BackColor),
+          decoration: BoxDecoration(color: backColor),
           child: Column(
             children: [
               SizedBox(
@@ -71,7 +70,7 @@ class HomePage extends State<Home> {
                         builder: (context) => const Checkin()));
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xffC7BCB1),
+                    backgroundColor: Color(0xffC7BCB1),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(3.0),
