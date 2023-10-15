@@ -31,29 +31,35 @@ class SettingsPage extends State<Settings> {
         ),
       ),
       body: Container(
+        width: double.infinity,
         alignment: Alignment.center,
-        child: Stack(
+        child: Column(
           children: [
-            Column(
+            Row(
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 375,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          prefs.remove('email');
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MainStatefulWidget()));
-                        },
-                        child: Text("Sign out"),
+                SizedBox(
+                  width: 375,
+                  height: 50,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(30, 10, 0, 0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
+                      onPressed: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        prefs.remove('email');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainStatefulWidget()));
+                      },
+                      child: Text(
+                        "Sign out",
+                        style: GoogleFonts.merriweather(color: Colors.white),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
