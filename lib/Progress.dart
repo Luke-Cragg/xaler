@@ -13,7 +13,9 @@ class MainProgress extends State<Progress> {
       appBar: AppBar(
         title: Text("Progress"),
       ),
-      body: Text("Progress"),
+      body: Container(
+        width: double.infinity,
+      ),
     );
   }
 }
