@@ -18,6 +18,7 @@ dependencies:
   smooth_page_indicator:
   shared_preferences:
   intl:
+  draw_graph:
 
 dev_dependencies:
   flutter_test:
