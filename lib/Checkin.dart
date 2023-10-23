@@ -58,14 +58,6 @@ class CheckinPage extends State<Checkin> {
     if (collectionData.docs.isEmpty) {
       await collection.add(json);
     }
-    //   final json = {
-    //     'mood': mood,
-    //     'Activity': activityLevel,
-    //     'Socialising': socialLevel,
-    //     'total': total
-    //   };
-    //   await dailyUpdate.add(json);
-    // }
   }
 
   @override
