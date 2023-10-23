@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 import 'settings.dart';
 import 'Checkin.dart';
+import 'Onboarding.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -67,7 +68,7 @@ class HomePage extends State<Home> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const Checkin()));
+                        builder: (context) => const Onboarding()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xffC7BCB1),
