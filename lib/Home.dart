@@ -5,6 +5,7 @@ import 'main.dart';
 import 'settings.dart';
 import 'Checkin.dart';
 import 'Onboarding.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,6 +17,7 @@ class HomePage extends State<Home> {
   final Color backColor = const Color(0xFF38434E);
 
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser!;
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -48,6 +50,7 @@ class HomePage extends State<Home> {
           decoration: BoxDecoration(color: backColor),
           child: Column(
             children: [
+              Text("Signed in: ${user.email}"),
               SizedBox(
                 height: 80,
               ),
@@ -68,7 +71,7 @@ class HomePage extends State<Home> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const Onboarding()));
+                        builder: (context) => const Checkin()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xffC7BCB1),
