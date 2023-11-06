@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
+import 'Login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -46,13 +49,10 @@ class SettingsPage extends State<Settings> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue),
                       onPressed: () async {
+                        FirebaseAuth.instance.signOut();
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
-                        prefs.remove('email');
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MainStatefulWidget()));
+                        await prefs.clear();
                       },
                       child: Text(
                         "Sign out",
