@@ -49,10 +49,10 @@ class SettingsPage extends State<Settings> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue),
                       onPressed: () async {
-                        FirebaseAuth.instance.signOut();
-                        SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-                        await prefs.clear();
+                        await FirebaseAuth.instance.signOut();
+                        // SharedPreferences prefs =
+                        //     await SharedPreferences.getInstance();
+                        // await prefs.clear();
                       },
                       child: Text(
                         "Sign out",
