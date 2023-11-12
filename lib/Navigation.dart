@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'Home.dart';
-import 'Vent.dart';
+import 'Journal.dart';
 import 'Progress.dart';
 import 'Resources.dart';
+
+var bottomNavKey = GlobalKey<State<BottomNavigationBar>>();
+int pageIndex = 0;
 
 class MyNav extends StatefulWidget {
   const MyNav({super.key});
@@ -12,11 +15,10 @@ class MyNav extends StatefulWidget {
 
 class _MyNavState extends State<MyNav> {
   final Color BackGrey = Color(0xFF3A3A3A);
-  int pageIndex = 0;
   List<Widget> PageList = <Widget>[
     Home(),
     Progress(),
-    Vent(),
+    Journal(),
     Resources(),
   ];
   @override
@@ -24,6 +26,7 @@ class _MyNavState extends State<MyNav> {
     return Scaffold(
       body: PageList[pageIndex],
       bottomNavigationBar: BottomNavigationBar(
+        key: bottomNavKey,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
         backgroundColor: BackGrey,
