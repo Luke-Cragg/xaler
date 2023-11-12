@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:xaler/Home.dart';
-import 'package:xaler/Onboarding.dart';
+import 'Screens/Onboarding.dart';
 import 'Navigation.dart';
 import 'Login.dart';
 
