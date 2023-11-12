@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xaler/Progress.dart';
 import 'main.dart';
 import 'settings.dart';
-import 'Checkin.dart';
-import 'Onboarding.dart';
+import 'Screens/Checkin.dart';
+import 'Screens/Onboarding.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'Navigation.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -90,6 +92,14 @@ class HomePage extends State<Home> {
                   ),
                 ),
               ),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {});
+                    pageIndex = 2;
+                    // Navigator.of(context).pushReplacement(
+                    //     MaterialPageRoute(builder: (context) => const MyNav()));
+                  },
+                  child: Text("Press"))
             ],
           ),
         ));
