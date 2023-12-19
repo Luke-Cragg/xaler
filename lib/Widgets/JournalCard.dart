@@ -11,9 +11,22 @@ Widget journalCard(Function()? onTap, QueryDocumentSnapshot doc) {
           color: Colors.blueGrey, borderRadius: BorderRadius.circular(8.0)),
       child: Column(
         children: [
-          Text(doc["entry_title"]),
-          Text(doc["creation_date"]),
-          Text(doc["entry_content"]),
+          Text(
+            doc["entry_title"],
+            style: TextStyle(color: Colors.white, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 10),
+          Text(
+            doc["creation_date"],
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          SizedBox(height: 10),
+          Text(
+            doc["entry_content"],
+            style: TextStyle(color: Colors.white, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     ),
