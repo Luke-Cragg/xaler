@@ -16,6 +16,7 @@ class Journal extends StatefulWidget {
 }
 
 class _JournalState extends State<Journal> {
+  final Color backColor = const Color(0xFF38434E);
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String UserId = '';
@@ -35,12 +36,24 @@ class _JournalState extends State<Journal> {
     GetCurrentUserUID();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Journal"),
+        title: Text("Journal",
+            style: GoogleFonts.quicksand(color: Colors.white, fontSize: 42)),
+        elevation: 0,
+        backgroundColor: backColor,
+        centerTitle: true,
       ),
       body: Container(
+        decoration: BoxDecoration(color: backColor),
         child: Column(children: [
-          Text("Journal Page"),
-          Text("Recent Notes", style: GoogleFonts.quicksand()),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+              child: Text("Recent Notes",
+                  style:
+                      GoogleFonts.quicksand(color: Colors.white, fontSize: 26)),
+            ),
+          ),
           SizedBox(height: 20),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -58,7 +71,6 @@ class _JournalState extends State<Journal> {
                 }
                 if (snapshot.hasData) {
                   return GridView(
-                    //shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2),
                     children: snapshot.data!.docs
@@ -83,6 +95,7 @@ class _JournalState extends State<Journal> {
         ]),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Color(0XFF1E90FF),
         onPressed: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => journalEntry()));
