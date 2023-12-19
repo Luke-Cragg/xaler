@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:xaler/Screens/Signup.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -20,48 +23,85 @@ class _LoginState extends State<Login> {
   }
 
   Future Signin() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: 'Incorrect Email or Password!\nPlease try again',
+          toastLength: Toast.LENGTH_LONG);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    const Color backGround = Color(0xFF003A6C);
     //GetCurrentUserUID();
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-              },
-              icon: Icon(Icons.leave_bags_at_home))
-        ],
-        title: Text('Home'),
+        title: Text("XALER",
+            style: GoogleFonts.quicksand(color: Colors.white, fontSize: 60.0)),
+        elevation: 0,
+        backgroundColor: backGround,
+        centerTitle: true,
       ),
-      body: Center(
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(color: backGround),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 20),
+                child: Text("Sign In",
+                    style: GoogleFonts.quicksand(
+                        fontSize: 30, color: Colors.white)),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                    labelText: 'Email',
+                    hintStyle: TextStyle(color: Colors.white),
+                    filled: true,
+                    fillColor: Colors.white),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
                 obscureText: true,
+                decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintStyle: TextStyle(color: Colors.white),
+                    filled: true,
+                    fillColor: Colors.white),
               ),
             ),
-            ElevatedButton(
-              onPressed: Signin,
-              child: Text('Login'),
-            ),
+            TextButton(onPressed: () {}, child: Text('Forgot Password')),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => Signup()));
+                    },
+                    child: Text("Register")),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: Signin,
+                  child: Text('Login'),
+                ),
+              ],
+            )
           ],
         ),
       ),
