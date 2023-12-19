@@ -138,8 +138,7 @@ import 'Login.dart';
 //                     controller: passwordController,
 //                     decoration: const InputDecoration(
 //                       hintStyle: TextStyle(color: Colors.white),
-//                       border: OutlineInputBorder(),
-//                       filled: true,
+////                       filled: true,
 //                       fillColor: Colors.white,
 //                       labelText: 'Password',
 //                     )),
@@ -188,27 +187,22 @@ class MyApp extends StatelessWidget {
 
 class MainPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                User? user = snapshot.data;
-                if (user == null) {
-                  return Login();
-                } else {
-                  return MyNav();
-                }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              User? user = snapshot.data;
+              if (user == null) {
+                return Login();
               } else {
-                return CircularProgressIndicator();
+                return MyNav();
               }
-            }),
-      );
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Text("Hello World"),
-      );
+            } else {
+              return CircularProgressIndicator();
+            }
+          }),
+    );
+  }
 }
