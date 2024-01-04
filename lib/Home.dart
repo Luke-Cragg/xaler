@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xaler/Progress.dart';
+import 'package:xaler/mindfulness.dart';
 import 'main.dart';
 import 'settings.dart';
 import 'Screens/Checkin.dart';

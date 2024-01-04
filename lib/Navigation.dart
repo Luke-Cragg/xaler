@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Home.dart';
 import 'Journal.dart';
-import 'Progress.dart';
+import 'mindfulness.dart';
 import 'Resources.dart';
 
 var bottomNavKey = GlobalKey<State<BottomNavigationBar>>();
@@ -17,7 +17,7 @@ class _MyNavState extends State<MyNav> {
   final Color BackGrey = Color(0xFF3A3A3A);
   List<Widget> PageList = <Widget>[
     Home(),
-    Progress(),
+    Mindfulness(),
     Journal(),
     Resources(),
   ];
@@ -41,8 +41,7 @@ class _MyNavState extends State<MyNav> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.insert_chart_outlined_outlined),
-              label: 'Progress'),
+              icon: Icon(Icons.sunny), label: 'Mindfulness'),
           BottomNavigationBarItem(
               icon: Icon(Icons.message_outlined), label: 'Vent'),
           BottomNavigationBarItem(
