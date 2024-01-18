@@ -21,8 +21,6 @@ dependencies:
   audioplayers:
   fluttertoast:
   url_launcher:
-  just_audio:
-  audio_service:
 
 dev_dependencies:
   flutter_test:
