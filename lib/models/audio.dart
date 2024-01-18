@@ -1,6 +1,4 @@
-//import 'package:xaler/Models/creator.dart';
 import 'package:flutter/material.dart';
-import 'package:audio_service/audio_service.dart';
 
 class Audio {
   final String id;
@@ -8,7 +6,7 @@ class Audio {
   final String title;
   final String imageUrl;
   final String? audioPath;
-  final String? audioUrl;
+  final String audioUrl;
   final bool isRecommended;
 
   Audio({
@@ -16,7 +14,7 @@ class Audio {
     required this.creator,
     required this.title,
     required this.imageUrl,
-    this.audioUrl,
+    required this.audioUrl,
     this.audioPath,
     this.isRecommended = false,
   }) : assert(audioUrl != null || audioPath != null);
@@ -38,7 +36,7 @@ final List<Audio> audioList = [
     creator: "Melbourne Mindfulness Centre",
     title: '4 Minute Body Scan',
     audioUrl:
-        'https://drive.google.com/file/d/1kt-ORI3Kkf2onwpnLoIzwGKxkIEh7W6L/view?usp=sharing',
+        'https://drive.google.com/uc?export=view&id=1kt-ORI3Kkf2onwpnLoIzwGKxkIEh7W6L',
     imageUrl:
         'https://images.unsplash.com/photo-1575275400619-80ea3bb088b6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   ),
@@ -47,7 +45,7 @@ final List<Audio> audioList = [
     creator: 'Vidyamala Burch',
     title: 'Tension Release Meditation',
     audioUrl:
-        'https://drive.google.com/file/d/1dcsW9byG8G4Gyb1hFvtFS27LnrBdfvDA/view?usp=sharing',
+        'https://drive.google.com/uc?export=view&id=1dcsW9byG8G4Gyb1hFvtFS27LnrBdfvDA',
     imageUrl:
         'https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?q=80&w=2093&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   )
