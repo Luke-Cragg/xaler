@@ -6,14 +6,14 @@ import 'main.dart';
 import 'Login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
   @override
-  State<Settings> createState() => SettingsPage();
+  State<SettingsPage> createState() => _SettingsPage();
 }
 
-class SettingsPage extends State<Settings> {
-  final Color backGround = const Color(0xFF003A6C);
+class _SettingsPage extends State<SettingsPage> {
+  final Color backGround = const Color(0xFF38434E);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
