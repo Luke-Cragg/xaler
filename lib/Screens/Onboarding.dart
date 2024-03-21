@@ -1,6 +1,8 @@
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Home.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../Navigation.dart';
@@ -30,10 +32,18 @@ class OnboardingPage extends State<Onboarding> {
   bool Q5Answered = false;
   bool AllAnswered = false;
 
+  void completeOnboarding() async {
+    await EncryptedSharedPreferences.initialize('1111111111111111',
+        algorithm: EncryptionAlgorithm.aes);
+    var prefs = EncryptedSharedPreferences.getInstance();
+    await prefs.setBoolean('onboardingCompleted', true);
+  }
+
   String CurrentDate = DateFormat('dMy').format(DateTime.now());
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String UserId = '';
+  bool OnboardComplete = false;
 
 //Gets the current signed in users firebase UID. This allows for data to be created
 //and retrieved for just that user.
@@ -697,6 +707,7 @@ class OnboardingPage extends State<Onboarding> {
                 ),
                 onPressed: () async {
                   //CreateDailyInfo();
+                  completeOnboarding();
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const MyNav()));
                 },
