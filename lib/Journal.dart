@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xaler/Screens/JournalEntry.dart';
 import 'package:xaler/Navigation.dart';
 import 'package:xaler/Screens/JournalReader.dart';
@@ -31,6 +32,28 @@ class _JournalState extends State<Journal> {
     }
   }
 
+  Future<void> setJournalChallenge() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String currentChallenge = await prefs.getString('lastChallenge') ?? '';
+    if (currentChallenge == "Create a journal entry") {
+      await prefs.setBool('ChallengeStatus', true);
+    }
+  }
+
+  void deleteJournalEntry(String documentId) {
+    FirebaseFirestore.instance
+        .collection("Journal")
+        .doc(UserId)
+        .collection("Entries")
+        .doc(documentId)
+        .delete()
+        .then((_) {
+      print("Deleted Journal");
+    }).catchError((error) {
+      print("Failed to delete");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     GetCurrentUserUID();
@@ -48,13 +71,13 @@ class _JournalState extends State<Journal> {
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Text("Recent Notes",
                   style:
                       GoogleFonts.quicksand(color: Colors.white, fontSize: 26)),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: FirebaseFirestore.instance
@@ -65,22 +88,30 @@ class _JournalState extends State<Journal> {
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
                 if (snapshot.hasData) {
                   return GridView(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
                     children: snapshot.data!.docs
-                        .map((note) => journalCard(() {
+                        .map((note) => journalCard(
+                            () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => JournalReader(note),
-                                  ));
-                            }, note))
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => JournalReader(note),
+                                ),
+                              );
+                            },
+                            note,
+                            (String documentId) {
+                              deleteJournalEntry(documentId);
+                            },
+                            context))
                         .toList(),
                   );
                 } else {
@@ -95,13 +126,14 @@ class _JournalState extends State<Journal> {
         ]),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Color(0XFF1E90FF),
+        backgroundColor: const Color(0XFF1E90FF),
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => journalEntry()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const journalEntry()));
+          setJournalChallenge();
         },
-        label: Text("Add Entry"),
-        icon: Icon(Icons.add),
+        label: const Text("Add Entry"),
+        icon: const Icon(Icons.add),
       ),
     );
   }
