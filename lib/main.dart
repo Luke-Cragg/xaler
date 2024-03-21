@@ -1,15 +1,18 @@
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xaler/Home.dart';
 import 'Screens/Onboarding.dart';
 import 'Navigation.dart';
 import 'Login.dart';
+import 'API/Firebase_api.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await FirebaseApi().initNotifications();
   runApp(MyApp());
 }
 
@@ -19,12 +22,38 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MainPage(),
+      home: _MainPage(),
     );
   }
 }
 
-class MainPage extends StatelessWidget {
+class _MainPage extends StatefulWidget {
+  const _MainPage({super.key});
+  @override
+  State<_MainPage> createState() => MainPage();
+}
+
+class MainPage extends State<_MainPage> {
+  bool onboarded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkOnboarding();
+  }
+
+  checkOnboarding() async {
+    //SharedPreferences prefs = await SharedPreferences.getInstance();
+    await EncryptedSharedPreferences.initialize('1111111111111111',
+        algorithm: EncryptionAlgorithm.aes);
+    var prefs = EncryptedSharedPreferences.getInstance();
+    bool complete = prefs.getBoolean('onboardingCompleted') ?? false;
+
+    setState(() {
+      onboarded = complete;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +65,11 @@ class MainPage extends StatelessWidget {
               if (user == null) {
                 return Login();
               } else {
-                return MyNav();
+                if (onboarded) {
+                  return MyNav();
+                } else {
+                  return Onboarding();
+                }
               }
             } else {
               return CircularProgressIndicator();
