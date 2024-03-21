@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/audio.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class Mindfulness extends StatefulWidget {
-  const Mindfulness({super.key});
+  const Mindfulness({Key? key}) : super(key: key);
 
   @override
   State<Mindfulness> createState() => _MindfulnessState();
@@ -11,18 +13,19 @@ class Mindfulness extends StatefulWidget {
 
 class _MindfulnessState extends State<Mindfulness> {
   AudioPlayer audioPlayer = AudioPlayer();
-  bool isplaying = false;
+  bool isPlaying = false;
   String currentTitle = '';
   String currentCreator = '';
-  String currentImageurl = '';
+  String currentImageUrl = '';
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
+  late Future<List<Audio>> _audioStream;
 
-  String FormatTime(Duration duration) {
-    String TwoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = TwoDigits(duration.inHours);
-    final minutes = TwoDigits(duration.inMinutes.remainder(60));
-    final seconds = TwoDigits(duration.inSeconds.remainder(60));
+  String formatTime(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
     return [
       if (duration.inHours > 0) hours,
       minutes,
@@ -30,8 +33,17 @@ class _MindfulnessState extends State<Mindfulness> {
     ].join(':');
   }
 
+  Future<void> setMindfulnessChallenge() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String currentChallenge = await prefs.getString('lastChallenge') ?? '';
+    if (currentChallenge == "View the mindfulness audios") {
+      await prefs.setBool('ChallengeStatus', true);
+    }
+  }
+
   @override
   void initState() {
+    Firebase.initializeApp(); // Initialize Firebase
     audioPlayer.onDurationChanged.listen((newDuration) {
       if (mounted) {
         setState(() {
@@ -48,6 +60,9 @@ class _MindfulnessState extends State<Mindfulness> {
       }
     });
     super.initState();
+
+    _audioStream = fetchAudioList();
+    setMindfulnessChallenge();
   }
 
   @override
@@ -56,34 +71,88 @@ class _MindfulnessState extends State<Mindfulness> {
     super.dispose();
   }
 
+  FutureBuilder<List<Audio>> _audioStreamBuilder() {
+    return FutureBuilder(
+        future: _audioStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error Streaming Data'));
+          } else {
+            List<Audio> audioList = snapshot.data ?? [];
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 5.0,
+                mainAxisSpacing: 20.0,
+              ),
+              itemCount: audioList.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () async {
+                    await stopAudio();
+                    await playAudio(
+                      audioList[index].audioUrl,
+                      audioList[index].title,
+                      audioList[index].creator,
+                      audioList[index].imageUrl,
+                    );
+                  },
+                  child: GridTile(
+                    child: Card(
+                      elevation: 5.0,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.network(
+                            audioList[index].imageUrl,
+                            height: 100,
+                            width: 140,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(height: 8),
+                          Text(audioList[index].title),
+                          Text(audioList[index].creator),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        });
+  }
+
   Future<void> playAudio(
-      String url, String title, String creator, String Imageurl) async {
+      String url, String title, String creator, String imageUrl) async {
     await audioPlayer.stop();
-    await audioPlayer.play(UrlSource(url));
+    await audioPlayer.play(UrlSource(url)); // Play audio from URL
     setState(() {
-      isplaying = true;
-      currentCreator = creator;
+      isPlaying = true;
       currentTitle = title;
-      currentImageurl = Imageurl;
+      currentCreator = creator;
+      currentImageUrl = imageUrl;
     });
   }
 
   Future<void> stopAudio() async {
     await audioPlayer.stop();
     setState(() {
-      isplaying = false;
+      isPlaying = false;
     });
   }
 
   Future<void> pauseAudio() async {
-    if (isplaying) {
+    if (isPlaying) {
       await audioPlayer.pause();
     } else {
       await audioPlayer.resume();
     }
 
     setState(() {
-      isplaying = !isplaying;
+      isPlaying = !isPlaying;
     });
   }
 
@@ -96,37 +165,7 @@ class _MindfulnessState extends State<Mindfulness> {
       body: Column(
         children: [
           Expanded(
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, crossAxisSpacing: 5.0),
-              itemCount: audioList.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () async {
-                    await stopAudio();
-                    await playAudio(
-                        audioList[index].audioUrl,
-                        audioList[index].title,
-                        audioList[index].creator,
-                        audioList[index].imageUrl);
-                  },
-                  child: GridTile(
-                      child: Card(
-                    elevation: 5.0,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.network(audioList[index].imageUrl,
-                            height: 40, width: 40),
-                        SizedBox(height: 8),
-                        Text(audioList[index].title),
-                        Text(audioList[index].creator)
-                      ],
-                    ),
-                  )),
-                );
-              },
-            ),
+            child: _audioStreamBuilder(),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -136,38 +175,45 @@ class _MindfulnessState extends State<Mindfulness> {
               child: Column(
                 children: [
                   Slider(
-                      value: position.inSeconds.toDouble(),
-                      onChanged: (value) async {
-                        final position = Duration(seconds: value.toInt());
-                        await audioPlayer.seek(position);
-                      },
-                      min: 0,
-                      max: duration.inSeconds.toDouble()),
+                    value: position.inSeconds.toDouble(),
+                    onChanged: (value) async {
+                      final position = Duration(seconds: value.toInt());
+                      await audioPlayer.seek(position);
+                    },
+                    min: 0,
+                    max: duration.inSeconds.toDouble(),
+                  ),
                   Row(
                     children: [
                       Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: Text(FormatTime(position))),
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Text(formatTime(position)),
+                      ),
                       Spacer(),
                       Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Text(FormatTime(duration))),
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Text(formatTime(duration)),
+                      ),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                          onPressed: () => pauseAudio(),
-                          icon: isplaying
-                              ? Icon(Icons.pause)
-                              : Icon(Icons.play_arrow)),
+                        onPressed: () => pauseAudio(),
+                        icon: isPlaying
+                            ? Icon(Icons.pause)
+                            : Icon(Icons.play_arrow),
+                      ),
                       SizedBox(width: 75),
                       Align(
                         alignment: Alignment.centerRight,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [Text(currentTitle), Text(currentCreator)],
+                          children: [
+                            Text(currentTitle),
+                            Text(currentCreator),
+                          ],
                         ),
                       )
                     ],
@@ -175,7 +221,7 @@ class _MindfulnessState extends State<Mindfulness> {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
