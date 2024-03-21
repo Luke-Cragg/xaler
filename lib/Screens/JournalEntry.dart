@@ -57,30 +57,41 @@ class _journalEntryState extends State<journalEntry> {
                 decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Enter your journal title",
-                    hintStyle: TextStyle(fontSize: 20, color: Colors.white),
+                    hintStyle: TextStyle(
+                        fontSize: 20, color: Color.fromARGB(96, 255, 255, 255)),
                     fillColor: Colors.white),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Text(
                 date,
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
-              SizedBox(height: 20),
-              Align(
+              const SizedBox(height: 20),
+              const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Hints:\n• How was today?\n• What was the highlight of your day?\n• What was not so great today?\n• Use this area for whatever you need to vent\n• This is your private safe space to let it out!",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   )),
-              TextField(
-                style: TextStyle(color: Colors.white, fontSize: 18),
-                controller: _contentController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Enter your journal entry",
-                    hintStyle: TextStyle(color: Colors.white)),
+              SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        color: Color.fromARGB(96, 255, 255, 255), width: 1)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    controller: _contentController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Enter your journal entry",
+                        hintStyle: TextStyle(
+                            color: Color.fromARGB(96, 255, 255, 255))),
+                  ),
+                ),
               ),
             ],
           ),
