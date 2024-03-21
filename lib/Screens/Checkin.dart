@@ -1,7 +1,7 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../Home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../Navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,6 +30,12 @@ class CheckinPage extends State<Checkin> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String UserId = '';
+  String activityAdvice = '';
+  String moodAdvice = '';
+  String socialAdvice = '';
+  String finalResponse = '';
+  String finalActivityResponse = '';
+  String finalSocialResponse = '';
 
 //Gets the current signed in users firebase UID. This allows for data to be created
 //and retrieved for just that user.
@@ -57,6 +63,143 @@ class CheckinPage extends State<Checkin> {
     final QuerySnapshot collectionData = await collection.get();
     if (collectionData.docs.isEmpty) {
       await collection.add(json);
+    }
+  }
+
+  Future<String> getRandomActivityResult(int score) async {
+    CollectionReference collectionReference;
+    if (score > 2) {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('ActivityLevel')
+          .collection('highActivity');
+    } else {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('ActivityLevel')
+          .collection('poorActivity');
+    }
+
+    QuerySnapshot querySnapshot = await collectionReference.get();
+    int randomIndex = Random().nextInt(querySnapshot.docs.length);
+    Map<String, dynamic> data =
+        querySnapshot.docs[randomIndex].data() as Map<String, dynamic>;
+    return data['response'];
+  }
+
+  Future<String> getRandomSocialResult(int score) async {
+    CollectionReference collectionReference;
+    if (score > 2) {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('SocialisingLevel')
+          .collection('HighSocial');
+    } else {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('SocialisingLevel')
+          .collection('LowSocial');
+    }
+
+    QuerySnapshot querySnapshot = await collectionReference.get();
+    int randomIndex = Random().nextInt(querySnapshot.docs.length);
+    Map<String, dynamic> data =
+        querySnapshot.docs[randomIndex].data() as Map<String, dynamic>;
+    return data['response'];
+  }
+
+  Future<String> getRandomMoodResult(int score) async {
+    CollectionReference collectionReference;
+    if (score > 2) {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('MoodLevel')
+          .collection('HighMood');
+    } else {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('MoodLevel')
+          .collection('LowMood');
+    }
+
+    QuerySnapshot querySnapshot = await collectionReference.get();
+    int randomIndex = Random().nextInt(querySnapshot.docs.length);
+    Map<String, dynamic> data =
+        querySnapshot.docs[randomIndex].data() as Map<String, dynamic>;
+    return data['response'];
+  }
+
+  Future<String> getRandomFinalResult(int score) async {
+    CollectionReference collectionReference;
+    if (score > 10) {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('Finals')
+          .collection('HighFinal');
+    } else if (score < 10 && score >= 5) {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('Finals')
+          .collection('MediumFinal');
+    } else {
+      collectionReference =
+          _firestore.collection('Checkin').doc('Finals').collection('LowFinal');
+    }
+
+    QuerySnapshot querySnapshot = await collectionReference.get();
+    int randomIndex = Random().nextInt(querySnapshot.docs.length);
+    Map<String, dynamic> data =
+        querySnapshot.docs[randomIndex].data() as Map<String, dynamic>;
+    return data['response'];
+  }
+
+  Future<String> getFinalActivityResponse(int score) async {
+    CollectionReference collectionReference;
+    if (score > 2) {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('Finals')
+          .collection('HighActivity');
+    } else {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('Finals')
+          .collection('LowActivity');
+    }
+
+    QuerySnapshot querySnapshot = await collectionReference.get();
+    int randomIndex = Random().nextInt(querySnapshot.docs.length);
+    Map<String, dynamic> data =
+        querySnapshot.docs[randomIndex].data() as Map<String, dynamic>;
+    return data['response'];
+  }
+
+  Future<String> getFinalSocialResponse(int score) async {
+    CollectionReference collectionReference;
+    if (score > 2) {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('Finals')
+          .collection('HighSocial');
+    } else {
+      collectionReference = _firestore
+          .collection('Checkin')
+          .doc('Finals')
+          .collection('LowSocial');
+    }
+
+    QuerySnapshot querySnapshot = await collectionReference.get();
+    int randomIndex = Random().nextInt(querySnapshot.docs.length);
+    Map<String, dynamic> data =
+        querySnapshot.docs[randomIndex].data() as Map<String, dynamic>;
+    return data['response'];
+  }
+
+  Future<void> setCheckinChallenge() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String currentChallenge = await prefs.getString('lastChallenge') ?? '';
+    if (currentChallenge == "Complete a check in today") {
+      await prefs.setBool('ChallengeStatus', true);
     }
   }
 
@@ -107,14 +250,17 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q1Answered
                                         ? null
-                                        : () {
-                                            setState(
-                                              () {
-                                                mood = 4;
-                                                total = total + mood;
-                                                Q1Answered = true;
-                                              },
-                                            );
+                                        : () async {
+                                            setState(() {
+                                              mood = 4;
+                                              total = total + mood;
+                                              Q1Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomMoodResult(mood);
+                                            setState(() {
+                                              moodAdvice = result;
+                                            });
                                           },
                                     style: ElevatedButton.styleFrom(
                                         shape: const CircleBorder(),
@@ -137,14 +283,17 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q1Answered
                                         ? null
-                                        : () {
-                                            setState(
-                                              () {
-                                                mood = 2;
-                                                total = total + mood;
-                                                Q1Answered = true;
-                                              },
-                                            );
+                                        : () async {
+                                            setState(() {
+                                              mood = 2;
+                                              total = total + mood;
+                                              Q1Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomMoodResult(mood);
+                                            setState(() {
+                                              moodAdvice = result;
+                                            });
                                           },
                                     style: ElevatedButton.styleFrom(
                                       shape: const CircleBorder(),
@@ -165,14 +314,17 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q1Answered
                                         ? null
-                                        : () {
-                                            setState(
-                                              () {
-                                                mood = 3;
-                                                total = total + mood;
-                                                Q1Answered = true;
-                                              },
-                                            );
+                                        : () async {
+                                            setState(() {
+                                              mood = 3;
+                                              total = total + mood;
+                                              Q1Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomMoodResult(mood);
+                                            setState(() {
+                                              moodAdvice = result;
+                                            });
                                           },
                                     style: ElevatedButton.styleFrom(
                                       shape: const CircleBorder(),
@@ -192,14 +344,17 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q1Answered
                                         ? null
-                                        : () {
-                                            setState(
-                                              () {
-                                                mood = 1;
-                                                total = total + mood;
-                                                Q1Answered = true;
-                                              },
-                                            );
+                                        : () async {
+                                            setState(() {
+                                              mood = 1;
+                                              total = total + mood;
+                                              Q1Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomMoodResult(mood);
+                                            setState(() {
+                                              moodAdvice = result;
+                                            });
                                           },
                                     style: ElevatedButton.styleFrom(
                                       shape: const CircleBorder(),
@@ -217,34 +372,19 @@ class CheckinPage extends State<Checkin> {
                               )
                             ],
                           ),
-                          mood == 4 || mood == 3
-                              ? Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                  child: SizedBox(
-                                      width: 150,
-                                      height: 60,
-                                      child: Text(
-                                        "Thats great to hear!",
-                                        style: GoogleFonts.quicksand(
-                                            color: Colors.white, fontSize: 20),
-                                        textAlign: TextAlign.center,
-                                      )))
-                              : mood == 2 || mood == 1
-                                  ? Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 40, 0, 0),
-                                      child: SizedBox(
-                                          width: 150,
-                                          height: 60,
-                                          child: Text(
-                                            "I'm sorry to hear!",
-                                            style: GoogleFonts.quicksand(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                            textAlign: TextAlign.center,
-                                          )))
-                                  : Text("")
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+                            child: SizedBox(
+                              width: 250,
+                              height: 250,
+                              child: Text(
+                                moodAdvice,
+                                style: GoogleFonts.quicksand(
+                                    color: Colors.white, fontSize: 16),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -280,14 +420,18 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q2Answered
                                         ? null
-                                        : () {
-                                            setState(
-                                              () {
-                                                activityLevel = 4;
-                                                total = total + activityLevel;
-                                                Q2Answered = true;
-                                              },
-                                            );
+                                        : () async {
+                                            setState(() {
+                                              activityLevel = 4;
+                                              total = total + activityLevel;
+                                              Q2Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomActivityResult(
+                                                    activityLevel);
+                                            setState(() {
+                                              activityAdvice = result;
+                                            });
                                           },
                                     style: ElevatedButton.styleFrom(
                                         shape: const CircleBorder(),
@@ -310,11 +454,17 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q2Answered
                                         ? null
-                                        : () {
+                                        : () async {
                                             setState(() {
                                               activityLevel = 2;
                                               total = total + activityLevel;
                                               Q2Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomActivityResult(
+                                                    activityLevel);
+                                            setState(() {
+                                              activityAdvice = result;
                                             });
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -336,11 +486,17 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q2Answered
                                         ? null
-                                        : () {
+                                        : () async {
                                             setState(() {
                                               activityLevel = 3;
                                               total = total + activityLevel;
                                               Q2Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomActivityResult(
+                                                    activityLevel);
+                                            setState(() {
+                                              activityAdvice = result;
                                             });
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -361,11 +517,17 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q2Answered
                                         ? null
-                                        : () {
+                                        : () async {
                                             setState(() {
                                               activityLevel = 1;
                                               total = total + activityLevel;
                                               Q2Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomActivityResult(
+                                                    activityLevel);
+                                            setState(() {
+                                              activityAdvice = result;
                                             });
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -384,34 +546,19 @@ class CheckinPage extends State<Checkin> {
                               )
                             ],
                           ),
-                          activityLevel == 4 || activityLevel == 3
-                              ? Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                  child: SizedBox(
-                                      width: 150,
-                                      height: 60,
-                                      child: Text(
-                                        "Thats fantastic, well done!",
-                                        style: GoogleFonts.quicksand(
-                                            color: Colors.white, fontSize: 20),
-                                        textAlign: TextAlign.center,
-                                      )))
-                              : activityLevel == 2 || activityLevel == 1
-                                  ? Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 40, 0, 0),
-                                      child: SizedBox(
-                                          width: 200,
-                                          height: 200,
-                                          child: Text(
-                                            "Did you know that even small amounts \nof physical activity can reduce dementia and depression by up to 30%",
-                                            style: GoogleFonts.quicksand(
-                                                color: Colors.black,
-                                                fontSize: 16),
-                                            textAlign: TextAlign.center,
-                                          )))
-                                  : const Text(""),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+                            child: SizedBox(
+                              width: 350,
+                              height: 250,
+                              child: Text(
+                                activityAdvice,
+                                style: GoogleFonts.quicksand(
+                                    color: Colors.black, fontSize: 16),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -446,11 +593,30 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q3Answered
                                         ? null
-                                        : () {
+                                        : () async {
                                             setState(() {
                                               socialLevel = 4;
                                               total = total + socialLevel;
                                               Q3Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomSocialResult(
+                                                    socialLevel);
+                                            String finalTotal =
+                                                await getRandomFinalResult(
+                                                    total);
+                                            String finalActivity =
+                                                await getFinalActivityResponse(
+                                                    activityLevel);
+                                            String finalSocial =
+                                                await getFinalSocialResponse(
+                                                    socialLevel);
+                                            setState(() {
+                                              socialAdvice = result;
+                                              finalResponse = finalTotal;
+                                              finalActivityResponse =
+                                                  finalActivity;
+                                              finalSocialResponse = finalSocial;
                                             });
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -474,11 +640,30 @@ class CheckinPage extends State<Checkin> {
                                   ElevatedButton(
                                     onPressed: Q3Answered
                                         ? null
-                                        : () {
+                                        : () async {
                                             setState(() {
                                               socialLevel = 2;
                                               total = total + socialLevel;
                                               Q3Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomSocialResult(
+                                                    socialLevel);
+                                            String finalTotal =
+                                                await getRandomFinalResult(
+                                                    total);
+                                            String finalActivity =
+                                                await getFinalActivityResponse(
+                                                    activityLevel);
+                                            String finalSocial =
+                                                await getFinalSocialResponse(
+                                                    socialLevel);
+                                            setState(() {
+                                              socialAdvice = result;
+                                              finalResponse = finalTotal;
+                                              finalActivityResponse =
+                                                  finalActivity;
+                                              finalSocialResponse = finalSocial;
                                             });
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -499,11 +684,30 @@ class CheckinPage extends State<Checkin> {
                                 ElevatedButton(
                                     onPressed: Q3Answered
                                         ? null
-                                        : () {
+                                        : () async {
                                             setState(() {
                                               socialLevel = 3;
                                               total = total + socialLevel;
                                               Q3Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomSocialResult(
+                                                    socialLevel);
+                                            String finalTotal =
+                                                await getRandomFinalResult(
+                                                    total);
+                                            String finalActivity =
+                                                await getFinalActivityResponse(
+                                                    activityLevel);
+                                            String finalSocial =
+                                                await getFinalSocialResponse(
+                                                    socialLevel);
+                                            setState(() {
+                                              socialAdvice = result;
+                                              finalResponse = finalTotal;
+                                              finalActivityResponse =
+                                                  finalActivity;
+                                              finalSocialResponse = finalSocial;
                                             });
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -523,11 +727,30 @@ class CheckinPage extends State<Checkin> {
                                 ElevatedButton(
                                     onPressed: Q3Answered
                                         ? null
-                                        : () {
+                                        : () async {
                                             setState(() {
                                               socialLevel = 1;
                                               total = total + socialLevel;
                                               Q3Answered = true;
+                                            });
+                                            String result =
+                                                await getRandomSocialResult(
+                                                    socialLevel);
+                                            String finalTotal =
+                                                await getRandomFinalResult(
+                                                    total);
+                                            String finalActivity =
+                                                await getFinalActivityResponse(
+                                                    activityLevel);
+                                            String finalSocial =
+                                                await getFinalSocialResponse(
+                                                    socialLevel);
+                                            setState(() {
+                                              socialAdvice = result;
+                                              finalResponse = finalTotal;
+                                              finalActivityResponse =
+                                                  finalActivity;
+                                              finalSocialResponse = finalSocial;
                                             });
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -543,91 +766,51 @@ class CheckinPage extends State<Checkin> {
                                     ))
                               ])
                             ]),
-                        socialLevel == 4 || socialLevel == 3
-                            ? Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                child: SizedBox(
-                                    width: 150,
-                                    height: 60,
-                                    child: Text(
-                                      "Thats great, socialising is key to improving mental health!",
-                                      style: GoogleFonts.quicksand(
-                                          color: Colors.white, fontSize: 20),
-                                      textAlign: TextAlign.center,
-                                    )))
-                            : socialLevel == 2 || socialLevel == 1
-                                ? Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                    child: SizedBox(
-                                        width: 200,
-                                        height: 200,
-                                        child: Text(
-                                          "Did you know socialising with family, friends and even new people can massively help manage mental health symptoms",
-                                          style: GoogleFonts.quicksand(
-                                              color: Colors.white,
-                                              fontSize: 16),
-                                          textAlign: TextAlign.center,
-                                        )))
-                                : const Text(""),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+                          child: SizedBox(
+                            width: 250,
+                            height: 250,
+                            child: Text(
+                              socialAdvice,
+                              style: GoogleFonts.quicksand(
+                                  color: Colors.white, fontSize: 16),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
                       ]))),
-                  total >= 10
-                      ? Container(
-                          decoration: BoxDecoration(color: XalerBlue),
-                          child: Column(children: [
-                            SizedBox(height: 150),
-                            SizedBox(
-                                width: 300,
-                                child: Text(
-                                    "From your inputs, it looks as though you have had a good day! \n Here are some insights for you",
-                                    style: GoogleFonts.merriweather(
-                                        color: const Color(0xffC7BCB1),
-                                        fontSize: 18),
-                                    textAlign: TextAlign.center)),
-                            SizedBox(height: 30),
-                            activityLevel > 2
-                                ? SizedBox(
-                                    width: 300,
-                                    child: Text(
-                                        "Your activity level for the day is great. Exercise is one of the best things for improving your mental health. So keeping up your activity levels will really help! \n Well Done!",
-                                        style: GoogleFonts.merriweather(
-                                            color: const Color(0xffC7BCB1),
-                                            fontSize: 15),
-                                        textAlign: TextAlign.center))
-                                : SizedBox(
-                                    width: 300,
-                                    child: Text(
-                                        "I noticed that your activity level wasn't very high today. That is ok, everybody needs rest days. \n However, implementing exercise into your daily life can greatly improve your mental health and physical health also",
-                                        style: GoogleFonts.merriweather(
-                                            color: const Color(0xffC7BCB1),
-                                            fontSize: 15),
-                                        textAlign: TextAlign.center)),
-                            SizedBox(height: 30),
-                            socialLevel > 2
-                                ? SizedBox(
-                                    width: 300,
-                                    child: Text(
-                                        "Looks like you have done plenty socialising, this is fantastic. Socialising with friends and family is a great way to improve your mood, and hey, maybe some plans or new friends will come from it!",
-                                        style: GoogleFonts.merriweather(
-                                            color: const Color(0xffC7BCB1),
-                                            fontSize: 15),
-                                        textAlign: TextAlign.center))
-                                : SizedBox(
-                                    width: 300,
-                                    child: Text(
-                                        "It looks as though you weren't in a social mood today. That is ok, everybody needs to recharge their social battery. But socialising is a great way of lowering stress and improving mood. \nAnd always remember, they are your family and friends for a reason. Never be afraid to talk.",
-                                        style: GoogleFonts.merriweather(
-                                            color: const Color(0xffC7BCB1),
-                                            fontSize: 15),
-                                        textAlign: TextAlign.center)),
-                          ]))
-                      : total < 10 && total >= 5
-                          ? Container()
-                          : total < 5 && total > 2
-                              ? Container()
-                              : Container(
-                                  child: Text("You have broken me"),
-                                )
+                  Container(
+                    decoration: BoxDecoration(color: XalerBlue),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 150),
+                        SizedBox(
+                            width: 300,
+                            child: Text(finalResponse,
+                                style: GoogleFonts.merriweather(
+                                    color: const Color(0xffC7BCB1),
+                                    fontSize: 18),
+                                textAlign: TextAlign.center)),
+                        const SizedBox(height: 30),
+                        SizedBox(
+                            width: 300,
+                            child: Text(finalActivityResponse,
+                                style: GoogleFonts.merriweather(
+                                    color: const Color(0xffC7BCB1),
+                                    fontSize: 18),
+                                textAlign: TextAlign.center)),
+                        const SizedBox(height: 30),
+                        SizedBox(
+                            width: 300,
+                            child: Text(finalSocialResponse,
+                                style: GoogleFonts.merriweather(
+                                    color: const Color(0xffC7BCB1),
+                                    fontSize: 18),
+                                textAlign: TextAlign.center)),
+                      ],
+                    ),
+                  )
                 ])),
         bottomSheet: isLastPage
             ? TextButton(
@@ -645,6 +828,7 @@ class CheckinPage extends State<Checkin> {
                   CreateDailyInfo();
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const MyNav()));
+                  setCheckinChallenge();
                 },
                 child: Text(
                   'Finish',
