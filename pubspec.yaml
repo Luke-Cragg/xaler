@@ -21,6 +21,14 @@ dependencies:
   audioplayers:
   fluttertoast:
   url_launcher:
+  provider:
+  store_redirect:
+  firebase_messaging:
+  firebase_in_app_messaging:
+  http:
+  encrypt_shared_preferences:
+  curved_labeled_navigation_bar:
+
 
 dev_dependencies:
   flutter_test:
