@@ -14,6 +14,7 @@ Key Implementation features of this app include:
  - User ability to provide feedback to the developer
  - Asynchronous loading and functionality
  - Informed User Interface design based on recommended principles, heuristics, and previous research papers.
+ - User ability to delete account and all user data
 
 # Design and Functionality:
 
