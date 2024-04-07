@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xaler/Screens/JournalEntry.dart';
-import 'package:xaler/Navigation.dart';
 import 'package:xaler/Screens/JournalReader.dart';
 import 'package:xaler/Widgets/JournalCard.dart';
-import 'package:xaler/home.dart';
 
 class Journal extends StatefulWidget {
   const Journal({super.key});
@@ -19,7 +17,6 @@ class Journal extends StatefulWidget {
 class _JournalState extends State<Journal> {
   final Color backColor = const Color(0xFF38434E);
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String UserId = '';
 
 //Gets the current signed in users firebase UID. This allows for data to be created
@@ -34,7 +31,7 @@ class _JournalState extends State<Journal> {
 
   Future<void> setJournalChallenge() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String currentChallenge = await prefs.getString('lastChallenge') ?? '';
+    String currentChallenge = prefs.getString('lastChallenge') ?? '';
     if (currentChallenge == "Create a journal entry") {
       await prefs.setBool('ChallengeStatus', true);
     }
