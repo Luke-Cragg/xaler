@@ -1,20 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'settings.dart';
 import 'Screens/Checkin.dart';
-import 'Screens/Onboarding.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'Navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
-import 'package:http/http.dart' as http;
 
 class AppState extends ChangeNotifier {
   bool resourceVisit = false;
@@ -32,6 +25,7 @@ class HomePage extends State<Home> {
   String dailyAdvice = '';
   String lastAdviceUpdate = '';
   String lastChallengeUpdate = '';
+  String userName = '';
   double progressValue = 0;
   bool challengeComplete = false;
   String dailyChallenge = '';
@@ -39,12 +33,14 @@ class HomePage extends State<Home> {
   final Color backColor = const Color(0xFF38434E);
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   void initState() {
     super.initState();
     GetCurrentUserUID();
     lastAdviceCheck();
     lastChallengeCheck();
+    getUserName();
   }
 
   bool isToday(DateTime date) {
@@ -151,6 +147,30 @@ class HomePage extends State<Home> {
     }
   }
 
+  Future<String> getUserName() async {
+    try {
+      GetCurrentUserUID();
+      CollectionReference users = _firestore.collection('users');
+      DocumentSnapshot userDoc = await users.doc(UserId).get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        if (userData.containsKey('fname')) {
+          setState(() {
+            userName = userData['fname'];
+          });
+          return userData['fname'];
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+    setState(() {
+      userName = 'Admin';
+    });
+    return '';
+  }
+
   Future<void> checkChallenge() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     challengeComplete = prefs.getBool('ChallengeStatus') ?? false;
@@ -163,7 +183,6 @@ class HomePage extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -184,8 +203,10 @@ class HomePage extends State<Home> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsPage()));
               },
             ),
           ),
@@ -193,72 +214,86 @@ class HomePage extends State<Home> {
       ),
       body: Container(
         width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(color: backColor),
-        child: Column(
-          children: [
-            Text("Signed in: ${user.email}"),
-            const SizedBox(height: 25),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Daily Advice:',
-                  style: GoogleFonts.quicksand(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text(
-                dailyAdvice,
-                style: GoogleFonts.montserratAlternates(
-                    color: Colors.white, fontSize: 20),
-              ),
-            ),
-            SizedBox(height: 45),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(10.0, 0, 0, 10.0),
-                child: Text(
-                  "How are you today?",
-                  style: GoogleFonts.quicksand(
-                      fontSize: 32,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 375,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const Checkin()));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xffC7BCB1),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(3.0),
-                    ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: Text(
+                    "Hey $userName!",
+                    style: GoogleFonts.quicksand(
+                        fontSize: 28,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
-                child: Text(
-                  "Tell me about it",
-                  style: GoogleFonts.merriweather(
-                      fontSize: 30, color: Colors.black),
+              ),
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Daily Advice:',
+                    style: GoogleFonts.quicksand(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 60),
-            Container(
-              child: Column(
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  dailyAdvice,
+                  style: GoogleFonts.montserratAlternates(
+                      color: Colors.white, fontSize: 20),
+                ),
+              ),
+              const SizedBox(height: 45),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 10.0),
+                  child: Text(
+                    "How are you today?",
+                    style: GoogleFonts.quicksand(
+                        fontSize: 32,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 375,
+                height: 60,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const Checkin()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xffC7BCB1),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(3.0),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    "Tell me about it",
+                    style: GoogleFonts.merriweather(
+                        fontSize: 30, color: Colors.black),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 60),
+              Column(
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
@@ -274,10 +309,10 @@ class HomePage extends State<Home> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                       decoration: BoxDecoration(
                           border: Border.all(
-                              color: Color.fromARGB(255, 161, 161, 161),
+                              color: const Color.fromARGB(255, 161, 161, 161),
                               width: 3),
                           borderRadius: BorderRadius.circular(10)),
                       child: Column(
@@ -288,7 +323,7 @@ class HomePage extends State<Home> {
                               padding: const EdgeInsets.fromLTRB(30, 0, 0, 10),
                               child: Column(
                                 children: [
-                                  Text("$dailyChallenge",
+                                  Text(dailyChallenge,
                                       style: GoogleFonts.quicksand(
                                           color: Colors.white, fontSize: 22)),
                                 ],
@@ -323,8 +358,8 @@ class HomePage extends State<Home> {
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
