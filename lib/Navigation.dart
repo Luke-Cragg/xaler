@@ -1,7 +1,6 @@
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'Home.dart';
 import 'Journal.dart';
 import 'mindfulness.dart';
@@ -21,10 +20,10 @@ class _MyNavState extends State<MyNav> {
   bool resourceVisited = false;
 
   List<Widget> PageList = <Widget>[
-    Home(),
-    Mindfulness(),
-    Journal(),
-    Resources(),
+    const Home(),
+    const Mindfulness(),
+    const Journal(),
+    const Resources(),
   ];
   void updateHomePage(bool completed) {
     if (completed) {
@@ -46,7 +45,7 @@ class _MyNavState extends State<MyNav> {
           });
         },
         color: BackGrey,
-        backgroundColor: Color(0XFF1E90FF),
+        backgroundColor: const Color(0XFF1E90FF),
         buttonBackgroundColor: BackGrey,
         index: pageIndex,
         items: const [
@@ -80,30 +79,6 @@ class _MyNavState extends State<MyNav> {
               labelStyle: TextStyle(color: Colors.white)),
         ],
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   key: bottomNavKey,
-      //   elevation: 0,
-      //   type: BottomNavigationBarType.fixed,
-      //   backgroundColor: BackGrey,
-      //   selectedItemColor: Color(0XFF1E90FF),
-      //   unselectedItemColor: Color(0XFFFFFFFF),
-      //   currentIndex: pageIndex,
-      //   onTap: (index) {
-      //     setState(() {
-      //       pageIndex = index;
-      //     });
-      //   },
-      //   items: const [
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.sunny), label: 'Mindfulness'),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.message_outlined), label: 'Journal'),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.format_list_bulleted_outlined),
-      //         label: 'Resources')
-      //   ],
-      // ),
     );
   }
 }
