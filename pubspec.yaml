@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   google_fonts:
-  firebase_database:
   firebase_auth:
   firebase_core:
   cloud_firestore: ^4.5.3
