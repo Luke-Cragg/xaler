@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../Journal.dart';
 
 Widget journalCard(Function()? onTap, QueryDocumentSnapshot doc,
     Function(String)? onDelete, BuildContext context) {
   return InkWell(
     onTap: onTap,
     child: Container(
-      padding: EdgeInsets.all(8.0),
-      margin: EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(5.0),
       decoration: BoxDecoration(
           color: Colors.blueGrey, borderRadius: BorderRadius.circular(8.0)),
       child: Column(
@@ -20,19 +19,19 @@ Widget journalCard(Function()? onTap, QueryDocumentSnapshot doc,
                 onPressed: () {
                   DeleteConfirmation(context, doc.id, onDelete);
                 },
-                icon: Icon(Icons.delete),
+                icon: const Icon(Icons.delete),
               ),
             ],
           ),
           Text(
             doc["entry_title"],
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             doc["creation_date"],
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
       ),
