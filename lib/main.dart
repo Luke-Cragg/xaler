@@ -2,8 +2,6 @@ import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xaler/Home.dart';
 import 'Screens/Onboarding.dart';
 import 'Navigation.dart';
 import 'Login.dart';
@@ -13,7 +11,7 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseApi().initNotifications();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,14 +19,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: _MainPage(),
     );
   }
 }
 
 class _MainPage extends StatefulWidget {
-  const _MainPage({super.key});
+  const _MainPage();
   @override
   State<_MainPage> createState() => MainPage();
 }
@@ -43,7 +41,6 @@ class MainPage extends State<_MainPage> {
   }
 
   checkOnboarding() async {
-    //SharedPreferences prefs = await SharedPreferences.getInstance();
     await EncryptedSharedPreferences.initialize('1111111111111111',
         algorithm: EncryptionAlgorithm.aes);
     var prefs = EncryptedSharedPreferences.getInstance();
@@ -63,16 +60,16 @@ class MainPage extends State<_MainPage> {
             if (snapshot.connectionState == ConnectionState.active) {
               User? user = snapshot.data;
               if (user == null) {
-                return Login();
+                return const Login();
               } else {
                 if (onboarded) {
-                  return MyNav();
+                  return const MyNav();
                 } else {
-                  return Onboarding();
+                  return const Onboarding();
                 }
               }
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
     );
