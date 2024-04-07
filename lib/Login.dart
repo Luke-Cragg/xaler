@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:xaler/Screens/ForgotPass.dart';
 import 'package:xaler/Screens/Signup.dart';
+import 'Navigation.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -14,6 +16,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  Color backGround = const Color(0xFF003A6C);
 
   @override
   void dispose() {
@@ -22,11 +25,25 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  Future Signin() async {
+  void Signin() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim());
+      final UserCredential userCreds = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: emailController.text.trim(),
+              password: passwordController.text.trim());
+
+      if (userCreds.user != null) {
+        StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              return const MyNav();
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        );
+      }
     } catch (e) {
       Fluttertoast.showToast(
           msg: 'Incorrect Email or Password!\nPlease try again',
@@ -36,8 +53,6 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    const Color backGround = Color(0xFF003A6C);
-    //GetCurrentUserUID();
     return Scaffold(
       appBar: AppBar(
         title: Text("XALER",
@@ -55,7 +70,7 @@ class _LoginState extends State<Login> {
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.only(left: 20),
                 child: Text("Sign In",
                     style: GoogleFonts.quicksand(
                         fontSize: 30, color: Colors.white)),
@@ -65,7 +80,7 @@ class _LoginState extends State<Login> {
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 controller: emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Email',
                     hintStyle: TextStyle(color: Colors.white),
                     filled: true,
@@ -77,28 +92,34 @@ class _LoginState extends State<Login> {
               child: TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Password',
                     hintStyle: TextStyle(color: Colors.white),
                     filled: true,
                     fillColor: Colors.white),
               ),
             ),
-            TextButton(onPressed: () {}, child: Text('Forgot Password')),
+            TextButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ForgotPass();
+                  }));
+                },
+                child: const Text('Forgot Password')),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => Signup()));
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const Signup()));
                     },
-                    child: Text("Register")),
-                SizedBox(width: 10),
+                    child: const Text("Register")),
+                const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: Signin,
-                  child: Text('Login'),
+                  child: const Text('Login'),
                 ),
               ],
             )
