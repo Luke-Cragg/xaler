@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Audio {
@@ -38,17 +37,11 @@ Future<List<Audio>> fetchAudioList() async {
   try {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
         await FirebaseFirestore.instance.collection('Audio').get();
-    querySnapshot.docs.forEach((doc) {
+    for (var doc in querySnapshot.docs) {
       audioList.add(Audio.fromFirestore(doc));
-    });
+    }
   } catch (e) {
     print('Error fetching audio list from DB: $e');
   }
   return audioList;
 }
-
-// Stream<List<Audio>> fetchAudioList() {
-//   return FirebaseFirestore.instance.collection('Audio').snapshots().map(
-//       (snapshot) =>
-//           snapshot.docs.map((doc) => Audio.fromFirestore(doc)).toList());
-// }
