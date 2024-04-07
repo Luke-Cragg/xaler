@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -15,7 +16,7 @@ class Checkin extends StatefulWidget {
 }
 
 class CheckinPage extends State<Checkin> {
-  final Color XalerBlue = const Color(0xFF38434E);
+  static const Color XalerBlue = Color(0xFF38434E);
   final _PageController = PageController();
   bool isLastPage = false;
   int mood = 0;
@@ -197,7 +198,7 @@ class CheckinPage extends State<Checkin> {
 
   Future<void> setCheckinChallenge() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String currentChallenge = await prefs.getString('lastChallenge') ?? '';
+    String currentChallenge = prefs.getString('lastChallenge') ?? '';
     if (currentChallenge == "Complete a check in today") {
       await prefs.setBool('ChallengeStatus', true);
     }
@@ -208,12 +209,28 @@ class CheckinPage extends State<Checkin> {
     super.initState();
   }
 
+  @override
   void dispose() {
     _PageController.dispose();
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leadingWidth: 100,
+          leading: TextButton(
+            child: Text("Exit",
+                style: GoogleFonts.merriweather(
+                    color: Colors.black, fontSize: 26)),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const MyNav()));
+            },
+          ),
+        ),
         body: Container(
             padding: const EdgeInsets.only(bottom: 0),
             child: PageView(
@@ -223,12 +240,12 @@ class CheckinPage extends State<Checkin> {
                 },
                 children: [
                   Container(
-                    color: Color(0xff915c83),
+                    color: const Color(0xff915c83),
                     child: Center(
                       child: Column(
                         children: [
                           const SizedBox(
-                            height: 250,
+                            height: 150,
                           ),
                           Text(
                             'How do you feel today?',
@@ -390,7 +407,7 @@ class CheckinPage extends State<Checkin> {
                     ),
                   ),
                   Container(
-                    color: Color(0xffa4dded),
+                    color: const Color(0xffa4dded),
                     child: Center(
                       child: Column(
                         children: [
@@ -781,7 +798,7 @@ class CheckinPage extends State<Checkin> {
                         ),
                       ]))),
                   Container(
-                    decoration: BoxDecoration(color: XalerBlue),
+                    decoration: const BoxDecoration(color: XalerBlue),
                     child: Column(
                       children: [
                         const SizedBox(height: 150),
@@ -825,15 +842,40 @@ class CheckinPage extends State<Checkin> {
                   minimumSize: const Size.fromHeight(60),
                 ),
                 onPressed: () async {
-                  CreateDailyInfo();
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const MyNav()));
-                  setCheckinChallenge();
+                  if (Q1Answered == true &&
+                      Q2Answered == true &&
+                      Q3Answered == true) {
+                    CreateDailyInfo();
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => const MyNav()));
+                    setCheckinChallenge();
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: 'All questions must be answered before submitting',
+                        toastLength: Toast.LENGTH_LONG);
+                  }
                 },
-                child: Text(
-                  'Finish',
-                  style: GoogleFonts.quicksand(
-                      fontSize: 24, fontWeight: FontWeight.w600),
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => _PageController.previousPage(
+                          duration: const Duration(milliseconds: 800),
+                          curve: Curves.easeOutCirc),
+                      child: Text(
+                        'Back',
+                        style: GoogleFonts.quicksand(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const SizedBox(width: 100),
+                    Text(
+                      'Finish',
+                      style: GoogleFonts.quicksand(
+                          fontSize: 24, fontWeight: FontWeight.w600),
+                    ),
+                  ],
                 ),
               )
             : Container(
