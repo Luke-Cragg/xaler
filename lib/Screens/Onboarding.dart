@@ -1,9 +1,6 @@
 import 'package:encrypt_shared_preferences/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../Home.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../Navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,7 +38,6 @@ class OnboardingPage extends State<Onboarding> {
 
   String CurrentDate = DateFormat('dMy').format(DateTime.now());
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String UserId = '';
   bool OnboardComplete = false;
 
@@ -55,7 +51,7 @@ class OnboardingPage extends State<Onboarding> {
     }
   }
 
-  void CreateDailyInfo() async {
+  void CreateOnboardingInfo() async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     GetCurrentUserUID();
 
@@ -68,7 +64,7 @@ class OnboardingPage extends State<Onboarding> {
     };
 
     final CollectionReference collection =
-        _firestore.collection('DailyInfo').doc(UserId).collection(CurrentDate);
+        _firestore.collection('Onboarding').doc(UserId).collection(CurrentDate);
     final QuerySnapshot collectionData = await collection.get();
     if (collectionData.docs.isEmpty) {
       await collection.add(json);
@@ -80,11 +76,13 @@ class OnboardingPage extends State<Onboarding> {
     super.initState();
   }
 
+  @override
   void dispose() {
     _PageController.dispose();
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) => Scaffold(
         body: Container(
           padding: const EdgeInsets.only(bottom: 0),
@@ -95,16 +93,17 @@ class OnboardingPage extends State<Onboarding> {
             },
             children: [
               Container(
-                color: Color(0xff915c83),
+                color: const Color(0xff915c83),
                 child: Center(
                     child: Column(children: [
                   const SizedBox(
-                    height: 250,
+                    height: 210,
                   ),
                   Text(
                     'What is your Gender?',
                     style: GoogleFonts.quicksand(
                         fontSize: 32, color: Colors.white),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(
                     height: 50,
@@ -200,7 +199,7 @@ class OnboardingPage extends State<Onboarding> {
                 ])),
               ),
               Container(
-                color: Color(0xffa4dded),
+                color: const Color(0xffa4dded),
                 child: Center(
                   child: Column(children: [
                     const SizedBox(
@@ -336,14 +335,15 @@ class OnboardingPage extends State<Onboarding> {
                   child: Center(
                       child: Column(children: [
                     const SizedBox(
-                      height: 200,
+                      height: 150,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 30),
+                      padding: const EdgeInsets.only(left: 25),
                       child: Text(
                         'What is your employment status?',
                         style: GoogleFonts.quicksand(
                             fontSize: 32, color: Colors.white),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     const SizedBox(
@@ -353,7 +353,7 @@ class OnboardingPage extends State<Onboarding> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const SizedBox(
-                            width: 80,
+                            width: 60,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -371,7 +371,7 @@ class OnboardingPage extends State<Onboarding> {
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
                                     backgroundColor: const Color(0xffC7BCB1),
-                                    minimumSize: const Size(110, 110)),
+                                    minimumSize: const Size(120, 120)),
                                 child: Align(
                                   alignment: Alignment.center,
                                   child: Text(
@@ -397,7 +397,7 @@ class OnboardingPage extends State<Onboarding> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: const Color(0xffC7BCB1),
-                                  minimumSize: const Size(110, 110),
+                                  minimumSize: const Size(120, 120),
                                 ),
                                 child: Text(
                                   "Unemployed",
@@ -421,7 +421,7 @@ class OnboardingPage extends State<Onboarding> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: const Color(0xffC7BCB1),
-                                  minimumSize: const Size(110, 110),
+                                  minimumSize: const Size(120, 120),
                                 ),
                                 child: Text(
                                   "Employed",
@@ -444,7 +444,7 @@ class OnboardingPage extends State<Onboarding> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: const Color(0xffC7BCB1),
-                                  minimumSize: const Size(110, 110),
+                                  minimumSize: const Size(120, 120),
                                 ),
                                 child: Text(
                                   "Retired",
@@ -455,7 +455,7 @@ class OnboardingPage extends State<Onboarding> {
                         ]),
                   ]))),
               Container(
-                color: Color(0xffa4dded),
+                color: const Color(0xffa4dded),
                 child: Center(
                     child: Column(children: [
                   const SizedBox(
@@ -534,11 +534,12 @@ class OnboardingPage extends State<Onboarding> {
                       height: 210,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 30),
+                      padding: const EdgeInsets.only(left: 15),
                       child: Text(
                         'What is your goal?',
                         style: GoogleFonts.quicksand(
                             fontSize: 32, color: Colors.white),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     const SizedBox(
@@ -548,7 +549,7 @@ class OnboardingPage extends State<Onboarding> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const SizedBox(
-                            width: 80,
+                            width: 50,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -566,7 +567,7 @@ class OnboardingPage extends State<Onboarding> {
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
                                     backgroundColor: const Color(0xffC7BCB1),
-                                    minimumSize: const Size(110, 110)),
+                                    minimumSize: const Size(140, 140)),
                                 child: Align(
                                   alignment: Alignment.center,
                                   child: Text(
@@ -593,7 +594,7 @@ class OnboardingPage extends State<Onboarding> {
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
                                     backgroundColor: const Color(0xffC7BCB1),
-                                    minimumSize: const Size(110, 110),
+                                    minimumSize: const Size(140, 140),
                                     alignment: Alignment.centerRight),
                                 child: Text(
                                   "Help whilst \nwaiting for \nappointment",
@@ -618,7 +619,7 @@ class OnboardingPage extends State<Onboarding> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: const Color(0xffC7BCB1),
-                                  minimumSize: const Size(110, 110),
+                                  minimumSize: const Size(140, 140),
                                 ),
                                 child: Text(
                                   "Gain personal \ninsights",
@@ -635,14 +636,14 @@ class OnboardingPage extends State<Onboarding> {
                                     : () {
                                         setState(() {
                                           employment = 'Not sure';
-                                          Q3Answered = true;
+                                          Q5Answered = true;
                                         });
                                       },
                                 style: ElevatedButton.styleFrom(
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: const Color(0xffC7BCB1),
-                                  minimumSize: const Size(110, 110),
+                                  minimumSize: const Size(140, 140),
                                 ),
                                 child: Text(
                                   "Not sure",
@@ -660,7 +661,7 @@ class OnboardingPage extends State<Onboarding> {
                   ? Container(
                       decoration: BoxDecoration(color: XalerBlue),
                       child: Column(children: [
-                        SizedBox(height: 150),
+                        const SizedBox(height: 150),
                         SizedBox(
                           width: 300,
                           child: Text(
@@ -669,7 +670,7 @@ class OnboardingPage extends State<Onboarding> {
                                   color: const Color(0xffC7BCB1), fontSize: 18),
                               textAlign: TextAlign.center),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         ),
                         SizedBox(
@@ -683,10 +684,19 @@ class OnboardingPage extends State<Onboarding> {
                       ]),
                     )
                   : Container(
-                      child: const Column(
+                      decoration: BoxDecoration(color: XalerBlue),
+                      child: Column(
                         children: [
-                          Text(
-                              "You have missed a question, please answer all the questions to allow for the best insights")
+                          const SizedBox(height: 150),
+                          SizedBox(
+                            width: 300,
+                            child: Text(
+                                "You have missed a question, please answer all the questions to allow for the best insights",
+                                style: GoogleFonts.merriweather(
+                                    color: const Color(0xffC7BCB1),
+                                    fontSize: 18),
+                                textAlign: TextAlign.center),
+                          )
                         ],
                       ),
                     ),
@@ -706,7 +716,7 @@ class OnboardingPage extends State<Onboarding> {
                   minimumSize: const Size.fromHeight(60),
                 ),
                 onPressed: () async {
-                  //CreateDailyInfo();
+                  CreateOnboardingInfo();
                   completeOnboarding();
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const MyNav()));
