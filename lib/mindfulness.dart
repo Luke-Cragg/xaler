@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/audio.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -35,7 +36,7 @@ class _MindfulnessState extends State<Mindfulness> {
 
   Future<void> setMindfulnessChallenge() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String currentChallenge = await prefs.getString('lastChallenge') ?? '';
+    String currentChallenge = prefs.getString('lastChallenge') ?? '';
     if (currentChallenge == "View the mindfulness audios") {
       await prefs.setBool('ChallengeStatus', true);
     }
@@ -76,13 +77,13 @@ class _MindfulnessState extends State<Mindfulness> {
         future: _audioStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error Streaming Data'));
+            return const Center(child: Text('Error Streaming Data'));
           } else {
             List<Audio> audioList = snapshot.data ?? [];
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 5.0,
                 mainAxisSpacing: 20.0,
@@ -111,9 +112,17 @@ class _MindfulnessState extends State<Mindfulness> {
                             width: 140,
                             fit: BoxFit.cover,
                           ),
-                          SizedBox(height: 8),
-                          Text(audioList[index].title),
-                          Text(audioList[index].creator),
+                          const SizedBox(height: 6),
+                          Text(
+                            audioList[index].title,
+                            style: GoogleFonts.quicksand(fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            audioList[index].creator,
+                            style: GoogleFonts.quicksand(fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
                     ),
@@ -160,7 +169,7 @@ class _MindfulnessState extends State<Mindfulness> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mindfulness"),
+        title: const Text("Mindfulness"),
       ),
       body: Column(
         children: [
@@ -169,8 +178,8 @@ class _MindfulnessState extends State<Mindfulness> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 120,
+            child: SizedBox(
+              height: 130,
               width: double.infinity,
               child: Column(
                 children: [
@@ -189,7 +198,7 @@ class _MindfulnessState extends State<Mindfulness> {
                         padding: const EdgeInsets.only(left: 20),
                         child: Text(formatTime(position)),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
                         child: Text(formatTime(duration)),
@@ -202,10 +211,10 @@ class _MindfulnessState extends State<Mindfulness> {
                       IconButton(
                         onPressed: () => pauseAudio(),
                         icon: isPlaying
-                            ? Icon(Icons.pause)
-                            : Icon(Icons.play_arrow),
+                            ? const Icon(Icons.pause)
+                            : const Icon(Icons.play_arrow),
                       ),
-                      SizedBox(width: 75),
+                      const SizedBox(width: 75),
                       Align(
                         alignment: Alignment.centerRight,
                         child: Column(
