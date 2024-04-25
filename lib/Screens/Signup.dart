@@ -54,7 +54,7 @@ class _SignupState extends State<Signup> {
   Future<void> _signUp() async {
     try {
       validateEmail(emailController.text);
-      if (passController != passConfirmController) {
+      if (passController.text != passConfirmController.text) {
         Fluttertoast.showToast(msg: 'Passwords do not match');
       } else {
         UserCredential userCredential =
@@ -68,7 +68,7 @@ class _SignupState extends State<Signup> {
         }
       }
     } on FirebaseAuthException catch (e) {
-      print("Error: ${e.message}");
+      Fluttertoast.showToast(msg: '$e');
     }
   }
 
